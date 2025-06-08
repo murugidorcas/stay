@@ -8,7 +8,6 @@ import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart' as fa;
 import 'dart:html' as html;
-// --- 1. Data Models ---
 
 class Subject {
   String name;
@@ -27,10 +26,10 @@ class Student {
   String name;
   String admissionNumber;
   String section;
-  int? guardianId; // Stores the number/ID of the guardian
-  Map<String, double> grades; // Subject name to grade mapping
+  int? guardianId;
+  Map<String, double> grades;
   List<Scholarship> scholarships;
-  int studentNumber; // To display on UI
+  int studentNumber;
 
   Student({
     required this.name,
@@ -49,7 +48,7 @@ class Student {
 
   double get averageGrade {
     if (grades.isEmpty) return 0.0;
-    // Only count subjects with a grade entered for average calculation
+
     final gradedSubjects = grades.values.where((grade) => grade > 0).length;
     if (gradedSubjects == 0) return 0.0;
     return totalMarks / gradedSubjects;
@@ -74,7 +73,7 @@ class Guardian {
   String firstName;
   String lastName;
   String phoneNumber;
-  int guardianNumber; // To display on UI
+  int guardianNumber;
 
   Guardian({
     required this.firstName,
@@ -85,8 +84,6 @@ class Guardian {
 
   String get fullName => '$firstName $lastName';
 }
-
-// --- 2. State Management (ChangeNotifier) ---
 
 class SchoolData extends ChangeNotifier {
   String schoolName = 'Gssa Academy';
@@ -105,8 +102,7 @@ class SchoolData extends ChangeNotifier {
 
   int _studentCounter = 0;
   int _guardianCounter = 0;
-  int _scholarshipCounter =
-      0; // Not strictly needed for state, but for UI numbering
+  int _scholarshipCounter = 0;
 
   void updateSchoolConfig({
     String? name,
@@ -124,7 +120,7 @@ class SchoolData extends ChangeNotifier {
   void addSubject(String name) {
     if (name.isNotEmpty && !subjects.any((s) => s.name == name)) {
       subjects.add(Subject(name: name));
-      // When a subject is added, initialize grades for existing students
+
       for (var student in students) {
         if (!student.grades.containsKey(name)) {
           student.grades[name] = 0.0;
@@ -136,7 +132,7 @@ class SchoolData extends ChangeNotifier {
 
   void removeSubject(String name) {
     subjects.removeWhere((s) => s.name == name);
-    // Remove grades for this subject from all students
+
     for (var student in students) {
       student.grades.remove(name);
     }
@@ -158,13 +154,13 @@ class SchoolData extends ChangeNotifier {
 
   void removeGuardian(int guardianNumber) {
     guardians.removeWhere((g) => g.guardianNumber == guardianNumber);
-    // Update guardian IDs for students if their guardian was removed
+
     for (var student in students) {
       if (student.guardianId == guardianNumber) {
-        student.guardianId = null; // Disassociate student from removed guardian
+        student.guardianId = null;
       }
     }
-    // Re-number guardians
+
     for (int i = 0; i < guardians.length; i++) {
       guardians[i].guardianNumber = i + 1;
     }
@@ -174,7 +170,7 @@ class SchoolData extends ChangeNotifier {
 
   void clearAllGuardians() {
     guardians.clear();
-    // Clear all guardian associations from students
+
     for (var student in students) {
       student.guardianId = null;
     }
@@ -210,9 +206,7 @@ class SchoolData extends ChangeNotifier {
         admissionNumber: admission ?? '',
         section: section ?? '',
         guardianId: guardianId,
-        grades: {
-          for (var s in subjects) s.name: 0.0,
-        }, // Initialize all subjects to 0
+        grades: {for (var s in subjects) s.name: 0.0},
         studentNumber: _studentCounter,
       ),
     );
@@ -221,7 +215,7 @@ class SchoolData extends ChangeNotifier {
 
   void removeStudent(int studentNumber) {
     students.removeWhere((s) => s.studentNumber == studentNumber);
-    // Re-number students
+
     for (int i = 0; i < students.length; i++) {
       students[i].studentNumber = i + 1;
     }
@@ -269,7 +263,7 @@ class SchoolData extends ChangeNotifier {
     final student = students.firstWhere(
       (s) => s.studentNumber == studentNumber,
     );
-    _scholarshipCounter++; // Global counter, but could be per-student if needed
+    _scholarshipCounter++;
     student.scholarships.add(
       Scholarship(
         name: name ?? 'Scholarship $_scholarshipCounter',
@@ -288,7 +282,6 @@ class SchoolData extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Get guardian name for a student
   String getGuardianName(int? guardianId) {
     if (guardianId == null) return 'N/A';
     final guardian = guardians.firstWhereOrNull(
@@ -305,7 +298,6 @@ class SchoolData extends ChangeNotifier {
     return guardian?.phoneNumber ?? 'N/A';
   }
 
-  // Sample data for initial load
   void addSampleData() {
     addGuardian(
       firstName: 'John',
@@ -358,7 +350,6 @@ class SchoolData extends ChangeNotifier {
   }
 }
 
-// Extension to mimic .firstWhereOrNull (available in collection package, but useful here)
 extension IterableExtension<T> on Iterable<T> {
   T? firstWhereOrNull(bool Function(T element) test) {
     for (var element in this) {
@@ -383,7 +374,6 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
   late TabController _tabController;
   final TextEditingController _subjectInputController = TextEditingController();
 
-  // School Configuration Controllers
   final TextEditingController _schoolNameController = TextEditingController();
   final TextEditingController _academicYearController = TextEditingController();
   String? _selectedTerm;
@@ -394,14 +384,12 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // Initialize school config controllers from state
     final schoolData = Provider.of<SchoolData>(context, listen: false);
     _schoolNameController.text = schoolData.schoolName;
     _academicYearController.text = schoolData.academicYear;
     _selectedTerm = schoolData.term;
     _selectedExamType = schoolData.examType;
 
-    // Add sample data on initial load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       schoolData.addSampleData();
     });
@@ -633,7 +621,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                      minimumSize: const Size(50, 48), // Match input height
+                      minimumSize: const Size(50, 48),
                     ),
                     child: const FaIcon(fa.FontAwesomeIcons.plus),
                   ),
@@ -669,7 +657,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
 
   Widget _buildGuardianStudentTabs() {
     return _buildSection(
-      title: '', // Title is handled by tabs
+      title: '',
       child: Column(
         children: [
           TabBar(
@@ -704,11 +692,9 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
             ],
           ),
           const SizedBox(height: 20),
-          // We need a specific height for TabBarView to allow its children to scroll
+
           SizedBox(
-            height:
-                MediaQuery.of(context).size.height *
-                0.7, // Adjust height as needed
+            height: MediaQuery.of(context).size.height * 0.7,
             child: TabBarView(
               controller: _tabController,
               children: [_buildGuardiansTab(), _buildStudentsTab()],
@@ -752,7 +738,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
           ],
         ),
         const SizedBox(height: 20),
-        // Use Expanded to allow ListView.builder to take available height and be scrollable
+
         Expanded(
           child: Consumer<SchoolData>(
             builder: (context, schoolData, child) {
@@ -784,7 +770,6 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
       text: guardian.phoneNumber,
     );
 
-    // Add listeners to update state on change
     firstNameController.addListener(() {
       schoolData.updateGuardian(
         guardian.guardianNumber,
@@ -962,7 +947,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
           ],
         ),
         const SizedBox(height: 20),
-        // Use Expanded to allow ListView.builder to take available height and be scrollable
+
         Expanded(
           child: Consumer<SchoolData>(
             builder: (context, schoolData, child) {
@@ -970,9 +955,6 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                 return const Center(child: Text('No students added yet.'));
               }
               return ListView.builder(
-                // No shrinkWrap: true or physics: NeverScrollableScrollPhysics() here
-                // as the Expanded parent handles the vertical constraints,
-                // and we want it to scroll.
                 itemCount: schoolData.students.length,
                 itemBuilder: (context, index) {
                   final student = schoolData.students[index];
@@ -1087,14 +1069,24 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
               decoration: const InputDecoration(labelText: 'Class/Section'),
               items:
                   <String>[
-                    'Form 1A',
-                    'Form 1B',
-                    'Form 2A',
-                    'Form 2B',
-                    'Form 3A',
-                    'Form 3B',
-                    'Form 4A',
-                    'Form 4B',
+                    'Grade 1A',
+                    'Grade 1B',
+                    'Grade 2A',
+                    'Grade 2B',
+                    'Grade 3A',
+                    'Grade 3B',
+                    'Grade 4A',
+                    'Grade 4B',
+                    'Grade 5A',
+                    'Grade 5B',
+                    'Grade 6A',
+                    'Grade 6B',
+                    'Grade 7A',
+                    'Grade 7B',
+                    'Grade 8A',
+                    'Grade 8B',
+                    'Grade 9A',
+                    'Grade 9B',
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -1137,7 +1129,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
               children:
                   schoolData.subjects.map((subject) {
                     return SizedBox(
-                      width: 180, // Adjust width for subject grade input
+                      width: 180,
                       child: TextFormField(
                         initialValue: student.grades[subject.name]
                             ?.toStringAsFixed(0),
@@ -1178,9 +1170,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                   icon: const FaIcon(fa.FontAwesomeIcons.plus, size: 14),
                   label: const Text('Add Scholarship'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(
-                      0xFFf7971e,
-                    ), // btn-warning color
+                    backgroundColor: const Color(0xFFf7971e),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
                       vertical: 8,
@@ -1194,10 +1184,8 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
               const Text('No scholarships added for this student.')
             else
               ListView.builder(
-                shrinkWrap:
-                    true, // Keep shrinkWrap for scholarships within a student entry
-                physics:
-                    const NeverScrollableScrollPhysics(), // Keep physics for scholarships within a student entry
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: student.scholarships.length,
                 itemBuilder: (context, idx) {
                   final scholarship = student.scholarships[idx];
@@ -1211,9 +1199,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                       TextEditingController(text: scholarship.testimonial);
 
                   return Card(
-                    color: const Color(
-                      0xFFfff3cd,
-                    ), // scholarship-entry background
+                    color: const Color(0xFFfff3cd),
                     elevation: 1,
                     margin: const EdgeInsets.only(bottom: 10),
                     child: Padding(
@@ -1252,10 +1238,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                             decoration: const InputDecoration(
                               labelText: 'Scholarship Name',
                             ),
-                            onChanged:
-                                (value) =>
-                                    scholarship.name =
-                                        value, // Update model directly
+                            onChanged: (value) => scholarship.name = value,
                           ),
                           const SizedBox(height: 10),
                           TextFormField(
@@ -1266,8 +1249,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                             keyboardType: TextInputType.number,
                             onChanged: (value) {
                               scholarship.amount =
-                                  double.tryParse(value) ??
-                                  0.0; // Update model directly
+                                  double.tryParse(value) ?? 0.0;
                             },
                           ),
                           const SizedBox(height: 10),
@@ -1278,9 +1260,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                             ),
                             maxLines: 3,
                             onChanged:
-                                (value) =>
-                                    scholarship.testimonial =
-                                        value, // Update model directly
+                                (value) => scholarship.testimonial = value,
                           ),
                         ],
                       ),
@@ -1342,7 +1322,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                 icon: const FaIcon(fa.FontAwesomeIcons.fileExcel, size: 20),
                 label: const Text('Export to Excel'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF56ab2f), // btn-success
+                  backgroundColor: const Color(0xFF56ab2f),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
                     vertical: 15,
@@ -1355,7 +1335,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
                 icon: const FaIcon(fa.FontAwesomeIcons.eye, size: 20),
                 label: const Text('Preview Data'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4facfe), // Default btn color
+                  backgroundColor: const Color(0xFF4facfe),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
                     vertical: 15,
@@ -1373,9 +1353,8 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
   Widget _buildPreviewSection(BuildContext context) {
     return Consumer<SchoolData>(
       builder: (context, schoolData, child) {
-        // Only show preview section if there are students
         if (schoolData.students.isEmpty && !showPreview) {
-          return const SizedBox.shrink(); // Hide if no data and not explicitly shown
+          return const SizedBox.shrink();
         }
         return AnimatedOpacity(
           opacity: showPreview ? 1.0 : 0.0,
@@ -1399,17 +1378,13 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
     );
   }
 
-  bool showPreview = false; // State to control preview section visibility
+  bool showPreview = false;
 
   DataTable _generatePreviewTable(SchoolData schoolData) {
     if (schoolData.students.isEmpty) {
-      return DataTable(
-        columns: const [],
-        rows: const [],
-      ); // Empty table if no students
+      return DataTable(columns: const [], rows: const []);
     }
 
-    // Determine max scholarships for columns
     final maxScholarships =
         schoolData.students.isEmpty
             ? 0
@@ -1508,7 +1483,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),
-      // Removed dataRowColor with index.isEven logic as it's invalid.
+
       columnSpacing: 10,
       horizontalMargin: 10,
     );
@@ -1523,9 +1498,8 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
     }
 
     final excel = Excel.createExcel();
-    final sheet = excel['Student Grades']; // Or any sheet name you prefer
+    final sheet = excel['Student Grades'];
 
-    // School Configuration Headers
     sheet.appendRow([
       TextCellValue('School Name:'),
       TextCellValue(schoolData.schoolName),
@@ -1542,9 +1516,8 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
       TextCellValue('Exam Type:'),
       TextCellValue(schoolData.examType),
     ]);
-    sheet.appendRow([]); // Empty row for separation
+    sheet.appendRow([]);
 
-    // Main Headers
     List<CellValue> mainHeaders = [
       TextCellValue('Student Name'),
       TextCellValue('Admission No.'),
@@ -1569,11 +1542,9 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
     for (int i = 1; i <= maxScholarships; i++) {
       mainHeaders.add(TextCellValue('Scholarship $i Name'));
       mainHeaders.add(TextCellValue('Scholarship $i Amount'));
-      //mainHeaders.add(TextCellValue('Scholarship $i Testimonial'));
     }
     sheet.appendRow(mainHeaders);
 
-    // Data Rows
     for (var student in schoolData.students) {
       List<CellValue> rowData = [
         TextCellValue(student.name),
@@ -1589,7 +1560,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
       rowData.add(DoubleCellValue(student.totalMarks));
       rowData.add(
         DoubleCellValue(double.parse(student.averageGrade.toStringAsFixed(2))),
-      ); // Ensure it's a double
+      );
       rowData.add(TextCellValue(student.performance));
 
       for (int i = 0; i < maxScholarships; i++) {
@@ -1610,17 +1581,15 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
       }
 
       if (kIsWeb) {
-        // Handle web download
         final blob = html.Blob([fileBytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
-        html.Url.revokeObjectUrl(url); // Clean up the URL
+        html.Url.revokeObjectUrl(url);
         _showSnackBar(
           context,
           'Excel file downloaded successfully!',
           Colors.green,
         );
       } else {
-        // Handle mobile/desktop platforms
         final directory = await getTemporaryDirectory();
         final String filePath = '${directory.path}/Gssa_Student_Grades.xlsx';
         final File file = File(filePath);
@@ -1639,7 +1608,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
 
   void _previewData(BuildContext context) {
     setState(() {
-      showPreview = !showPreview; // Toggle visibility
+      showPreview = !showPreview;
     });
     if (Provider.of<SchoolData>(context, listen: false).students.isEmpty &&
         showPreview) {

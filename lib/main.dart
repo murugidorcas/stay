@@ -17,10 +17,7 @@ void main() {
 class StudentGradeSystemApp extends StatelessWidget {
   final String initialRoute;
 
-  const StudentGradeSystemApp({
-    super.key,
-    this.initialRoute = '/',
-  }); // Add constructor
+  const StudentGradeSystemApp({super.key, this.initialRoute = '/'});
 
   @override
   Widget build(BuildContext context) {

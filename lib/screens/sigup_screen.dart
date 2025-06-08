@@ -19,9 +19,8 @@ class _SignupScreenState extends State<SignupScreen>
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false; // State for loading animation on button
+  bool _isLoading = false;
 
-  // Animation Controllers for background shapes
   late AnimationController _shape1Controller;
   late AnimationController _shape2Controller;
   late AnimationController _shape3Controller;
@@ -29,7 +28,7 @@ class _SignupScreenState extends State<SignupScreen>
   @override
   void initState() {
     super.initState();
-    // Initialize animation controllers for background shapes
+
     _shape1Controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 6),
@@ -61,17 +60,15 @@ class _SignupScreenState extends State<SignupScreen>
   void _trySignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Show loading state
+        _isLoading = true;
       });
 
-      // Simulate a network request
       await Future.delayed(const Duration(seconds: 2));
 
       setState(() {
-        _isLoading = false; // Hide loading state
+        _isLoading = false;
       });
 
-      // For demonstration, assume signup is successful
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Account created successfully!'),
@@ -79,7 +76,6 @@ class _SignupScreenState extends State<SignupScreen>
         ),
       );
 
-      // Navigate to the sign-in screen after successful signup
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignInScreen()),
@@ -100,7 +96,6 @@ class _SignupScreenState extends State<SignupScreen>
         ),
         child: Stack(
           children: [
-            // Background Shapes (reusing the same animation setup as signin)
             _buildAnimatedShape(
               controller: _shape1Controller,
               size: 80,
@@ -230,8 +225,7 @@ class _SignupScreenState extends State<SignupScreen>
     return Column(
       children: [
         AnimatedBuilder(
-          animation:
-              _shape1Controller, // Using one of the shape controllers for pulse
+          animation: _shape1Controller,
           builder: (context, child) {
             final pulseScale = Tween<double>(
               begin: 1,
@@ -348,7 +342,7 @@ class _SignupScreenState extends State<SignupScreen>
   Widget _buildPasswordInput() {
     return TextFormField(
       controller: _passwordController,
-      obscureText: true, // Always obscure for signup
+      obscureText: true,
       decoration: const InputDecoration(
         labelText: 'Password',
         hintText: '••••••••',
@@ -470,7 +464,6 @@ class _SignupScreenState extends State<SignupScreen>
     return TextButton(
       onPressed: () {
         Navigator.pushReplacement(
-          // Use pushReplacement to replace signup with signin
           context,
           MaterialPageRoute(builder: (context) => const SignInScreen()),
         );

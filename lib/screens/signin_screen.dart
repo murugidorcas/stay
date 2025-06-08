@@ -20,9 +20,8 @@ class _SignInScreenState extends State<SignInScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false; // State for loading animation on button
+  bool _isLoading = false;
 
-  // Animation Controllers for background shapes
   late AnimationController _shape1Controller;
   late AnimationController _shape2Controller;
   late AnimationController _shape3Controller;
@@ -30,7 +29,7 @@ class _SignInScreenState extends State<SignInScreen>
   @override
   void initState() {
     super.initState();
-    // Initialize animation controllers
+
     _shape1Controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 6),
@@ -46,10 +45,8 @@ class _SignInScreenState extends State<SignInScreen>
       duration: const Duration(seconds: 6),
     );
 
-    // Start the first controller immediately
     _shape1Controller.repeat(reverse: true);
 
-    // Stagger the start of the other controllers for offset effect
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) _shape2Controller.repeat(reverse: true);
     });
@@ -72,18 +69,15 @@ class _SignInScreenState extends State<SignInScreen>
   void _trySignIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Show loading state
+        _isLoading = true;
       });
 
-      // Simulate a network request
       await Future.delayed(const Duration(seconds: 2));
 
       setState(() {
-        _isLoading = false; // Hide loading state
+        _isLoading = false;
       });
 
-      // For demonstration, let's assume login is successful
-      // In a real app, you'd check credentials and handle success/failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Welcome back, ${_usernameController.text}!'),
@@ -91,7 +85,6 @@ class _SignInScreenState extends State<SignInScreen>
         ),
       );
 
-      // Navigate to the main application home page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -114,7 +107,6 @@ class _SignInScreenState extends State<SignInScreen>
         ),
         child: Stack(
           children: [
-            // Background Shapes
             _buildAnimatedShape(
               controller: _shape1Controller,
               size: 80,
@@ -141,7 +133,7 @@ class _SignInScreenState extends State<SignInScreen>
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(25.0),
                 child: AnimatedOpacity(
-                  opacity: 1.0, // Always visible after initial animation
+                  opacity: 1.0,
                   duration: const Duration(milliseconds: 800),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 800),
@@ -166,7 +158,7 @@ class _SignInScreenState extends State<SignInScreen>
                     child: Form(
                       key: _formKey,
                       child: Column(
-                        mainAxisSize: MainAxisSize.min, // Wrap content
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           _buildLogoSection(),
                           const SizedBox(height: 30),
@@ -183,10 +175,8 @@ class _SignInScreenState extends State<SignInScreen>
                           _buildSocialButtons(),
                           const SizedBox(height: 30),
                           _buildSwitchLinks(),
-                          const SizedBox(
-                            height: 10,
-                          ), // Space for forgot password
-                          _buildForgotPasswordButton(), // New Forgot Password button
+                          const SizedBox(height: 10),
+                          _buildForgotPasswordButton(),
                         ],
                       ),
                     ),
@@ -248,8 +238,7 @@ class _SignInScreenState extends State<SignInScreen>
     return Column(
       children: [
         AnimatedBuilder(
-          animation:
-              _shape1Controller, // Using one of the shape controllers for pulse
+          animation: _shape1Controller,
           builder: (context, child) {
             final pulseScale = Tween<double>(
               begin: 1,
@@ -270,7 +259,7 @@ class _SignInScreenState extends State<SignInScreen>
                 ),
                 child: const Center(
                   child: Text(
-                    '✦', // Using a text icon for simplicity
+                    '✦',
                     style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ),
@@ -367,10 +356,10 @@ class _SignInScreenState extends State<SignInScreen>
 
   Widget _buildSignInButton() {
     return ElevatedButton(
-      onPressed: _isLoading ? null : _trySignIn, // Disable button when loading
+      onPressed: _isLoading ? null : _trySignIn,
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50),
-        backgroundColor: const Color(0xFF667eea), // Main button color
+        backgroundColor: const Color(0xFF667eea),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -415,7 +404,6 @@ class _SignInScreenState extends State<SignInScreen>
         Expanded(
           child: OutlinedButton.icon(
             onPressed: () {
-              // Google Sign-in logic
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Google Sign-in clicked!')),
               );
@@ -424,7 +412,7 @@ class _SignInScreenState extends State<SignInScreen>
               fa.FontAwesomeIcons.google,
               size: 20,
               color: Colors.red.shade700,
-            ), // Google color
+            ),
             label: const Text('Google'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -432,7 +420,7 @@ class _SignInScreenState extends State<SignInScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
               side: const BorderSide(color: Color(0xFFe5e7eb), width: 2),
-              foregroundColor: const Color(0xFF374151), // Text color
+              foregroundColor: const Color(0xFF374151),
               backgroundColor: Colors.white,
             ),
           ),
@@ -441,7 +429,6 @@ class _SignInScreenState extends State<SignInScreen>
         Expanded(
           child: OutlinedButton.icon(
             onPressed: () {
-              // Facebook Sign-in logic
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Facebook Sign-in clicked!')),
               );
@@ -450,7 +437,7 @@ class _SignInScreenState extends State<SignInScreen>
               fa.FontAwesomeIcons.facebook,
               size: 20,
               color: Colors.blue.shade800,
-            ), // Facebook color
+            ),
             label: const Text('Facebook'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -496,7 +483,6 @@ class _SignInScreenState extends State<SignInScreen>
   Widget _buildForgotPasswordButton() {
     return TextButton(
       onPressed: () {
-        // Implement forgot password logic or navigate to a forgot password screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Forgot Password logic goes here!')),
         );
