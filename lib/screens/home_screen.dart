@@ -86,7 +86,7 @@ class Guardian {
 }
 
 class SchoolData extends ChangeNotifier {
-  String schoolName = 'Gssa Academy';
+  String schoolName = 'Gssa';
   String academicYear = '2025';
   String term = 'First Term';
   String examType = 'Endterm Exam';
@@ -312,7 +312,7 @@ class SchoolData extends ChangeNotifier {
     addStudent(
       name: 'Alice Smith',
       admission: 'GSSA/001/2025',
-      section: 'Form 1A',
+      section: 'Grade 1A',
       guardianId: 1,
     );
     final alice = students.firstWhere((s) => s.studentNumber == 1);
@@ -331,7 +331,7 @@ class SchoolData extends ChangeNotifier {
     addStudent(
       name: 'Bob Johnson',
       admission: 'GSSA/002/2025',
-      section: 'Form 1B',
+      section: 'Grade 1B',
       guardianId: 2,
     );
     final bob = students.firstWhere((s) => s.studentNumber == 2);
@@ -1410,6 +1410,7 @@ class _StudentGradeSystemHomePageState extends State<StudentGradeSystemHomePage>
     for (int i = 1; i <= maxScholarships; i++) {
       columns.add(DataColumn(label: Text('Scholarship $i (Name)')));
       columns.add(DataColumn(label: Text('Scholarship $i (Amount)')));
+      //columns.add(DataColumn(label: Text('Scholarship $i (Testimonial)')));
     }
 
     List<DataRow> rows =
