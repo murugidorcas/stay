@@ -62,7 +62,7 @@ class StudentGradeSystemApp extends StatelessWidget {
             elevation: 5,
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 5,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
